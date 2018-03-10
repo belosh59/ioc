@@ -32,7 +32,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
         new ReferenceInjector().injectDependencies(beanDefinitionToBeanMap);
     }
 
-    void createBeansFromBeanDefinition() {
+    private void createBeansFromBeanDefinition() {
         for(BeanDefinition beanDefinition : beanDefinitions) {
             try {
                 // prepare

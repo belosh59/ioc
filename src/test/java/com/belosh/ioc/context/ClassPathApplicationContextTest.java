@@ -27,13 +27,11 @@ public class ClassPathApplicationContextTest {
     @Test
     public void testCreateBeansFromBeanDefinition() {
         ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("valid-properties.xml");
-        classPathApplicationContext.createBeansFromBeanDefinition();
     }
     //Multiple paths
     @Test
     public void testCreateBeansFromBeanDefinitionPaths() {
         ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("valid-properties.xml", "valid-data-types.xml");
-        classPathApplicationContext.createBeansFromBeanDefinition();
     }
 
     @Test
@@ -66,7 +64,6 @@ public class ClassPathApplicationContextTest {
         expectedEx.expect(BeanInstantiationException.class);
         expectedEx.expectMessage("Default constructor not found for com.belosh.ioc.service.BeanWithoutDefaultConstructor");
         ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("invalid-default-constructor.xml");
-        classPathApplicationContext.createBeansFromBeanDefinition();
     }
 
     @Test
@@ -74,13 +71,11 @@ public class ClassPathApplicationContextTest {
         expectedEx.expect(BeanInstantiationException.class);
         expectedEx.expectMessage("Incorrect class declared in beans configuration xml file");
         ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("invalid-class-declaration.xml");
-        classPathApplicationContext.createBeansFromBeanDefinition();
     }
 
     @Test
     public void testAllDataTypes() {
         ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("valid-data-types.xml");
-        classPathApplicationContext.createBeansFromBeanDefinition();
         AllDataTypes allDataTypes = classPathApplicationContext.getBean("allDataTypes", AllDataTypes.class);
         assertEquals(allDataTypes.getIntType(), 5);
         //assertEquals(allDataTypes.getDoubleType(), 3.36);

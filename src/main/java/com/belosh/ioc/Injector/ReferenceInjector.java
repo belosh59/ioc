@@ -22,7 +22,7 @@ public class ReferenceInjector extends Injector {
     protected Object getValueToInject(Map<String, String> dependencies, String propertyName, Map<BeanDefinition, Bean> beanDefinitionToBeanMap) {
         for (BeanDefinition beanDefinition : beanDefinitionToBeanMap.keySet()) {
             if (beanDefinition.getId().equals(propertyName)) {
-                return beanDefinitionToBeanMap.get(beanDefinition);
+                return beanDefinitionToBeanMap.get(beanDefinition).getValue();
             }
         }
         return null;

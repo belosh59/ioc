@@ -1,0 +1,5 @@
+<beans>
+    <bean id="checkConstructors" class="com.belosh.ioc.service.IncorrectClassName">
+        <property name="testField" value="test"/>
+    </bean>
+</beans>

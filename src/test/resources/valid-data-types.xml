@@ -1,0 +1,12 @@
+<beans>
+    <bean id="allDataTypes" class="com.belosh.ioc.service.AllDataTypes">
+        <property name="intType" value="5"/>
+        <property name="doubleType" value="3.36"/>
+        <property name="longType" value="12345678910"/>
+        <property name="floatType" value="3.36"/>
+        <property name="shortType" value="32767"/>
+        <property name="booleanType" value="true"/>
+        <property name="byteType" value="127"/>
+        <property name="charType" value="t"/>
+    </bean>
+</beans>

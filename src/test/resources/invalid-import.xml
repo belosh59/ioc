@@ -1,0 +1,11 @@
+<beans>
+
+    <import resource="wrongContext.xml"/>
+
+    <bean id="anotherPaymentService" class="com.belosh.ioc.service.PaymentService">
+        <property name="maxAmount" value="10"/>
+        <property name="mailService" ref="newMailService"/>
+    </bean>
+
+
+</beans>

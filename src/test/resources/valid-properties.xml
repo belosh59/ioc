@@ -1,0 +1,15 @@
+<beans>
+    <bean id="newMailService" class="com.belosh.ioc.service.MailService">
+        <property name="protocol" value="POP3"/>
+        <property name="port" value="3000"/>
+    </bean>
+
+    <bean id="userService" class="com.belosh.ioc.service.UserService">
+        <property name="mailService" ref="newMailService"/>
+    </bean>
+
+    <bean id="paymentService" class="com.belosh.ioc.service.PaymentService">
+        <property name="maxAmount" value="5000"/>
+        <property name="mailService" ref="newMailService"/>
+    </bean>
+</beans>

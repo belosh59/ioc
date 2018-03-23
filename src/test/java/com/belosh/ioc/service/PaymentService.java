@@ -16,4 +16,8 @@ public class PaymentService {
         mailService.sendEmail("from", "withdrawal successful");
         mailService.sendEmail("to", "credit successful");
     }
+
+    public MailService getMailService() {
+        return mailService;
+    }
 }

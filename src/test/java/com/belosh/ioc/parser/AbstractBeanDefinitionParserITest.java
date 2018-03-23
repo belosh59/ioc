@@ -76,7 +76,7 @@ public abstract class AbstractBeanDefinitionParserITest {
     @Test
     public void testXMLNotFound(){
         expectedEx.expect(ParseXMLException.class);
-        expectedEx.expectMessage("File not found in classpath");
+        expectedEx.expectMessage("File wrongFileName.xml not found in classpath");
         BeanDefinitionReader beanDefinitionReader = getBeanDefinitionReader("wrongFileName.xml");
         beanDefinitionReader.readBeanDefinitions();
     }

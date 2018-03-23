@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,21 +31,19 @@ public class BeanDefinitionDOMParser implements BeanDefinitionReader{
         return beanDefinitions;
     }
 
-    private void loadAndParseXML(String path) {
-        File contextXML;
-        try {
-            contextXML = new File(getClass().getClassLoader().getResource(path).getFile());
-            DOMParseContextXML(contextXML);
-        } catch (NullPointerException e) {
-            throw new ParseXMLException("File not found in classpath", e);
+    private void loadAndParseXML(String xmlFilePath) {
+        InputStream resource = getClass().getClassLoader().getResourceAsStream(xmlFilePath);
+        if (resource == null) {
+            throw new ParseXMLException("File " + xmlFilePath + " not found in classpath");
         }
+        domParseContextXML(resource);
     }
 
-    private void DOMParseContextXML(File contextXMLFile) {
+    private void domParseContextXML(InputStream inputStream) {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document document = dBuilder.parse(contextXMLFile);
+            Document document = dBuilder.parse(inputStream);
             document.getDocumentElement().normalize();
 
             NodeList imports = document.getElementsByTagName("import");
@@ -92,7 +91,7 @@ public class BeanDefinitionDOMParser implements BeanDefinitionReader{
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
-            throw new RuntimeException("Unable to parse document " + contextXMLFile);
+            throw new RuntimeException("Unable to parse xml from stream");
         } catch (ParserConfigurationException e) {
             throw new RuntimeException("Cannot configure DOM Parser");
         }

@@ -17,9 +17,9 @@ import java.util.Map;
 
 public class ClassPathApplicationContext implements ApplicationContext {
     private BeanDefinitionReader reader;
-    private List<Bean> beans = new ArrayList<>();
     private List<BeanDefinition> beanDefinitions;
     private Map<BeanDefinition, Bean> beanDefinitionToBeanMap = new HashMap<>();
+    private List<String> beanNames = new ArrayList<>();
 
     public ClassPathApplicationContext(String... paths) {
         // Setting type of the Parser
@@ -28,8 +28,68 @@ public class ClassPathApplicationContext implements ApplicationContext {
             beanDefinitions = reader.readBeanDefinitions();
         }
         createBeansFromBeanDefinition();
-        new ValueInjector().injectDependencies(beanDefinitionToBeanMap);
-        new ReferenceInjector().injectDependencies(beanDefinitionToBeanMap);
+        injectDependencies(new ValueInjector(beanDefinitionToBeanMap));
+        injectDependencies(new ReferenceInjector(beanDefinitionToBeanMap));
+    }
+
+    public <T> T getBean(Class<T> clazz) {
+        int beansCount = 0;
+        T returnBean = null;
+
+        for (Bean bean : beanDefinitionToBeanMap.values()) {
+            if (clazz.isInstance(bean.getValue())) {
+                beansCount++;
+                returnBean = clazz.cast(bean.getValue());
+            }
+        }
+
+        if (beansCount > 1) {
+            throw new BeanNotFoundException("There's more that 1 bean registered for the " + clazz);
+        } else if (beansCount == 0) {
+            throw new BeanNotFoundException("Bean was not found for class: " + clazz);
+        }
+
+        return returnBean;
+    }
+
+    public <T> T getBean(String id, Class<T> clazz) {
+        for (Bean bean : beanDefinitionToBeanMap.values()) {
+            if (bean.getId().equals(id)) {
+                try {
+                    return clazz.cast(bean.getValue());
+                } catch (ClassCastException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        throw new BeanNotFoundException("No such bean was registered for class: " + clazz + " with id: " + id);
+    }
+
+    public Object getBean(String id) {
+        for (Bean bean : beanDefinitionToBeanMap.values()) {
+            if (bean.getId().equals(id)) {
+                return bean.getValue();
+            }
+        }
+        throw new BeanNotFoundException("Bean was not found with id: " + id);
+    }
+
+    public List<String> getBeanNames() {
+        if (!beanNames.isEmpty()) {
+            return beanNames;
+        }
+        for (Bean bean : beanDefinitionToBeanMap.values()) {
+            beanNames.add(bean.getId());
+        }
+        return beanNames;
+    }
+
+    public void setReader(BeanDefinitionReader reader) {
+        this.reader = reader;
+    }
+
+    private void injectDependencies(Injector injector) {
+        injector.injectDependencies();
     }
 
     private void createBeansFromBeanDefinition() {
@@ -45,7 +105,6 @@ public class ClassPathApplicationContext implements ApplicationContext {
                 bean.setValue(clazz.getConstructor().newInstance());
 
                 //save bean
-                beans.add(bean);
                 beanDefinitionToBeanMap.put(beanDefinition, bean);
             } catch (NoSuchMethodException e) {
                 throw new BeanInstantiationException("Default constructor not found for " + beanDefinition.getBeanClassName(), e);
@@ -56,57 +115,5 @@ public class ClassPathApplicationContext implements ApplicationContext {
             }
 
         }
-    }
-
-    public <T> T getBean(Class<T> clazz) {
-        int beansCount = 0;
-        T returnBean = null;
-        for (Bean bean : beans) {
-            if (clazz.isInstance(bean.getValue())) {
-                beansCount++;
-                returnBean = clazz.cast(bean.getValue());
-            }
-        }
-        if (beansCount > 1) {
-            throw new BeanNotFoundException("There's more that 1 bean registered for the " + clazz);
-        } else if (beansCount == 0) {
-            throw new BeanNotFoundException("Bean was not found for class: " + clazz);
-        } else {
-            return returnBean;
-        }
-    }
-
-    public <T> T getBean(String id, Class<T> clazz) {
-        for (Bean bean : beans) {
-            if (bean.getId().equals(id)) {
-                try {
-                    return clazz.cast(bean.getValue());
-                } catch (ClassCastException e) {
-                    throw new BeanNotFoundException("No such bean was registered for class: " + clazz + " with id: " + id);
-                }
-            }
-        }
-        throw new BeanNotFoundException("No such bean was registered for class: " + clazz + " with id: " + id);
-    }
-
-    public Object getBean(String id) {
-        for (Bean bean : beans) {
-            if (bean.getId().equals(id)) {
-                return bean.getValue();
-            }
-        }
-        throw new BeanNotFoundException("Bean was not found with id: " + id);
-    }
-
-    public List<String> getBeanNames() {
-        List<String> names = new ArrayList<>();
-        for (Bean bean : beans) {
-            names.add(bean.getId());
-        }
-        return names;
-    }
-
-    public void setReader(BeanDefinitionReader reader) {
-        this.reader = reader;
     }
 }

@@ -8,8 +8,12 @@ import java.util.Map;
 
 public class ValueInjector extends Injector {
 
+    public ValueInjector(Map<BeanDefinition, Bean> beanDefinitionToBeanMap) {
+        super(beanDefinitionToBeanMap);
+    }
+
     @Override
-    protected Map<String, String> getDependencies(BeanDefinition beanDefinition) {
+    protected Map<String, ?> getDependencies(BeanDefinition beanDefinition) {
         return beanDefinition.getDependencies();
     }
 
@@ -37,10 +41,5 @@ public class ValueInjector extends Injector {
         } else {
             method.invoke(beanValue, propertyValue);
         }
-    }
-
-    @Override
-    protected Object getValueToInject(Map<String, String> dependencies, String propertyName, Map<BeanDefinition, Bean> beanDefinitionToBeanMap) {
-        return dependencies.get(propertyName);
     }
 }

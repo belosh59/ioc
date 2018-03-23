@@ -16,9 +16,6 @@ public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefin
     private SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
     private String path;
     private List<BeanDefinition> beanDefinitions = new ArrayList<>();
-    private BeanDefinition beanDefinition;
-    private Map<String, String> dependencies;
-    private Map<String, String> refDependencies;
 
     public BeanDefinitionSAXParser(String path) {
         this.path = path;
@@ -28,21 +25,26 @@ public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefin
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
         if (qName.equalsIgnoreCase("bean")) {
             // Initialize bean structure
-            beanDefinition = new BeanDefinition();
-            dependencies = new HashMap<>();
-            refDependencies = new HashMap<>();
+            BeanDefinition beanDefinition = new BeanDefinition();
+            beanDefinition.setDependencies(new HashMap<String, String>());
+            beanDefinition.setRefDependencies(new HashMap<String, String>());
+
             // Set bean attributes
             beanDefinition.setId(attributes.getValue("id"));
             beanDefinition.setBeanClassName(attributes.getValue("class"));
+            beanDefinitions.add(beanDefinition);
         } else if (qName.equalsIgnoreCase("property")) {
             String name = attributes.getValue("name");
             String value = attributes.getValue("value");
             String ref = attributes.getValue("ref");
+            BeanDefinition lastBeanDefinition = beanDefinitions.get(beanDefinitions.size()-1);
+
             if (value != null && !value.isEmpty()) {
-                dependencies.put(name, value);
+                lastBeanDefinition.getDependencies().put(name, value);
             }
+
             if (ref != null && !ref.isEmpty()) {
-                refDependencies.put(name, ref);
+                lastBeanDefinition.getRefDependencies().put(name, ref);
             }
         } else if (qName.equalsIgnoreCase("import")) {
             String path = attributes.getValue("resource");
@@ -52,11 +54,6 @@ public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefin
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-        if (qName.equalsIgnoreCase("bean")) {
-            beanDefinition.setDependencies(dependencies);
-            beanDefinition.setRefDependencies(refDependencies);
-            beanDefinitions.add(beanDefinition);
-        }
     }
 
     @Override
@@ -65,18 +62,16 @@ public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefin
     }
 
     private List<BeanDefinition> readBeanDefinitions(String xmlFilePath) {
-        File contextXML;
-        try {
-            contextXML = new File(getClass().getClassLoader().getResource(xmlFilePath).getFile());
-        } catch (NullPointerException e) {
-            throw new ParseXMLException("File not found in classpath", e);
+        InputStream resource = getClass().getClassLoader().getResourceAsStream(xmlFilePath);
+        if (resource == null) {
+            throw new ParseXMLException("File " + xmlFilePath + " not found in classpath");
         }
 
         try {
             SAXParser saxParser = saxParserFactory.newSAXParser();
-            saxParser.parse(contextXML, this);
+            saxParser.parse(resource, this);
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not parse file: " + xmlFilePath, e);
         }
 
         return beanDefinitions;

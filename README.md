@@ -1,5 +1,4 @@
 ### Refactored:
-'''
 * XMLBeanDefinitionParser -> NPE surrounded with try /catch clause
 * XMLBeanDefinitionParser -> Import tag processing included
 * XMLBeanDefinitionParser.DOMParserContextXML(File contextXMLFile) -> equal("") replaced with isEmpty
@@ -13,9 +12,6 @@
 * getBean methods refactored to use correct generics and interface calls
 * Added AllDataTypes test
 * Added Injector / ValueInjector / ReferenceInjector. User Template Pattern
-'''
 
 ### TODO
-'''
 * Tests on grovy
-'''

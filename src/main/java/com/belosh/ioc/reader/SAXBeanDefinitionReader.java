@@ -1,4 +1,4 @@
-package com.belosh.ioc.parser;
+package com.belosh.ioc.reader;
 
 import com.belosh.ioc.exceptions.ParseXMLException;
 import org.xml.sax.helpers.DefaultHandler;import org.xml.sax.*;
@@ -10,20 +10,19 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefinitionReader {
+public class SAXBeanDefinitionReader extends DefaultHandler implements BeanDefinitionReader {
     private SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
     private String path;
     private List<BeanDefinition> beanDefinitions = new ArrayList<>();
 
-    public BeanDefinitionSAXParser(String path) {
+    public SAXBeanDefinitionReader(String path) {
         this.path = path;
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-        if (qName.equalsIgnoreCase("bean")) {
+        if ("bean".equalsIgnoreCase(qName)) {
             // Initialize bean structure
             BeanDefinition beanDefinition = new BeanDefinition();
             beanDefinition.setDependencies(new HashMap<String, String>());
@@ -33,7 +32,7 @@ public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefin
             beanDefinition.setId(attributes.getValue("id"));
             beanDefinition.setBeanClassName(attributes.getValue("class"));
             beanDefinitions.add(beanDefinition);
-        } else if (qName.equalsIgnoreCase("property")) {
+        } else if ("property".equalsIgnoreCase(qName)) {
             String name = attributes.getValue("name");
             String value = attributes.getValue("value");
             String ref = attributes.getValue("ref");
@@ -46,7 +45,7 @@ public class BeanDefinitionSAXParser extends DefaultHandler implements BeanDefin
             if (ref != null && !ref.isEmpty()) {
                 lastBeanDefinition.getRefDependencies().put(name, ref);
             }
-        } else if (qName.equalsIgnoreCase("import")) {
+        } else if ("import".equalsIgnoreCase(qName)) {
             String path = attributes.getValue("resource");
             readBeanDefinitions(path);
         }

@@ -1,6 +1,5 @@
 package com.belosh.ioc.context;
 
-import com.belosh.ioc.entity.Bean;
 import com.belosh.ioc.exceptions.BeanInstantiationException;
 import com.belosh.ioc.service.AllDataTypes;
 import com.belosh.ioc.service.MailService;
@@ -69,7 +68,7 @@ public class ClassPathApplicationContextITest {
     public void testBeanMissedDefaultConstructor() {
         expectedEx.expect(BeanInstantiationException.class);
         expectedEx.expectMessage("Default constructor not found for com.belosh.ioc.service.BeanWithoutDefaultConstructor");
-        ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("invalid-default-constructor.xml");
+        new ClassPathApplicationContext("invalid-default-constructor.xml");
     }
 
     @Test
@@ -84,9 +83,9 @@ public class ClassPathApplicationContextITest {
         ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("valid-data-types.xml");
         AllDataTypes allDataTypes = classPathApplicationContext.getBean("allDataTypes", AllDataTypes.class);
         assertEquals(allDataTypes.getIntType(), 5);
-        //assertEquals(allDataTypes.getDoubleType(), 3.36);
+        assertEquals(allDataTypes.getDoubleType(), 3.36d, 0);
         assertEquals(allDataTypes.getLongType(), 12345678910L);
-        //assertEquals(allDataTypes.getFloatType(), 3.36);
+        assertEquals(allDataTypes.getFloatType(), 3.36f, 0);
         assertEquals(allDataTypes.getShortType(), 32767);
         assertEquals(allDataTypes.getBooleanType(), true);
         assertEquals(allDataTypes.getByteType(), 127);
@@ -103,6 +102,6 @@ public class ClassPathApplicationContextITest {
     public void invalidReferenceValue() {
         expectedEx.expect(BeanInstantiationException.class);
         expectedEx.expectMessage("Reference bean not found: newMailServiceInvalid");
-        ClassPathApplicationContext classPathApplicationContext = new ClassPathApplicationContext("invalid-refdependency.xml");
+        new ClassPathApplicationContext("invalid-refdependency.xml");
     }
 }

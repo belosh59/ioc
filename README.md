@@ -13,5 +13,9 @@
 * Added AllDataTypes test
 * Added Injector / ValueInjector / ReferenceInjector. User Template Pattern
 
+/* After  17.03.18*/
+* Refactored names of packages and classes
+* equals comparison corrected
+
 ### TODO
 * Tests on grovy

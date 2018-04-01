@@ -1,14 +1,14 @@
 package com.belosh.ioc.context;
 
-import com.belosh.ioc.Injector.Injector;
-import com.belosh.ioc.Injector.ReferenceInjector;
-import com.belosh.ioc.Injector.ValueInjector;
+import com.belosh.ioc.injector.Injector;
+import com.belosh.ioc.injector.ReferenceInjector;
+import com.belosh.ioc.injector.ValueInjector;
 import com.belosh.ioc.entity.Bean;
 import com.belosh.ioc.exceptions.BeanInstantiationException;
 import com.belosh.ioc.exceptions.BeanNotFoundException;
-import com.belosh.ioc.parser.BeanDefinition;
-import com.belosh.ioc.parser.BeanDefinitionReader;
-import com.belosh.ioc.parser.BeanDefinitionSAXParser;
+import com.belosh.ioc.reader.BeanDefinition;
+import com.belosh.ioc.reader.BeanDefinitionReader;
+import com.belosh.ioc.reader.SAXBeanDefinitionReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
     public ClassPathApplicationContext(String... paths) {
         // Setting type of the Parser
         for (String path : paths) {
-            setReader(new BeanDefinitionSAXParser(path));
+            setReader(new SAXBeanDefinitionReader(path));
             beanDefinitions = reader.readBeanDefinitions();
         }
         createBeansFromBeanDefinition();

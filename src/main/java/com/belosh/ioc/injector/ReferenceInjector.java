@@ -1,8 +1,8 @@
-package com.belosh.ioc.Injector;
+package com.belosh.ioc.injector;
 
 import com.belosh.ioc.entity.Bean;
 import com.belosh.ioc.exceptions.BeanInstantiationException;
-import com.belosh.ioc.parser.BeanDefinition;
+import com.belosh.ioc.reader.BeanDefinition;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;

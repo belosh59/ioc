@@ -1,4 +1,4 @@
-package com.belosh.ioc.parser;
+package com.belosh.ioc.reader;
 
 import com.belosh.ioc.exceptions.ParseXMLException;
 import org.junit.Assert;

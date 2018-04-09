@@ -1,6 +1,7 @@
 package com.belosh.ioc.reader;
 
-import com.belosh.ioc.exceptions.ParseXMLException;
+import com.belosh.ioc.entity.BeanDefinition;
+import com.belosh.ioc.exception.ParseXMLException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

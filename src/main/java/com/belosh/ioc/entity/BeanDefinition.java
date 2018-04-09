@@ -1,4 +1,4 @@
-package com.belosh.ioc.reader;
+package com.belosh.ioc.entity;
 
 import java.util.Map;
 import java.util.Objects;

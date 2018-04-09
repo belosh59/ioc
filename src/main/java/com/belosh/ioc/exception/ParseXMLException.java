@@ -1,4 +1,4 @@
-package com.belosh.ioc.exceptions;
+package com.belosh.ioc.exception;
 
 public class ParseXMLException extends RuntimeException {
     public ParseXMLException(String message) {

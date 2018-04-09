@@ -17,5 +17,10 @@
 * Refactored names of packages and classes
 * equals comparison corrected
 
-### TODO
-* Tests on grovy
+/* After 09.04.18*/
+* Tests on groovy
+* BeanFactoryPostProcessor processing implemented
+* BeanPostProcessor processing implemented
+
+### Questions
+* What is the reason for BeanPostProcessor methods to return object.

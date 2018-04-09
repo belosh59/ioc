@@ -1,7 +1,7 @@
 package com.belosh.ioc.injector;
 
 import com.belosh.ioc.entity.Bean;
-import com.belosh.ioc.reader.BeanDefinition;
+import com.belosh.ioc.entity.BeanDefinition;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;

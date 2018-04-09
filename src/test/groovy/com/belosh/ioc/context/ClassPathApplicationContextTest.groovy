@@ -1,31 +1,26 @@
 package com.belosh.ioc.context
 
-import com.belosh.ioc.exceptions.BeanInstantiationException
+import com.belosh.ioc.exception.BeanInstantiationException
 import com.belosh.ioc.service.AllDataTypes
 import com.belosh.ioc.service.MailService
 import com.belosh.ioc.service.PaymentService
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
-import static org.junit.Assert.assertNotNull
 
-class ClassPathApplicationContextTest extends GroovyTestCase {
+import static org.junit.Assert.*
 
+class ClassPathApplicationContextTest  {
 
     @Rule
-    ExpectedException expectedEx = ExpectedException.none()
-
-//    @Before
-//    void prepareTest() {
-//        println "before"
-//        context = new ClassPathApplicationContext("valid-properties.xml")
-//    }
+    public ExpectedException expectedEx = ExpectedException.none()
 
     //Single path
     @Test
     void testCreateBeansFromBeanDefinition() {
         new ClassPathApplicationContext("valid-properties.xml")
     }
+
     //Multiple paths
     @Test
     void testCreateBeansFromBeanDefinitionPaths() {
@@ -36,17 +31,16 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
     void testGetBeanByClass() {
         ApplicationContext context = new ClassPathApplicationContext("valid-properties.xml")
         MailService mailService = context.getBean(MailService.class)
-        assert mailService.getPort() == "3000"
-        assert mailService.getProtocol() =="POP3"
+        assertEquals("3000", mailService.getPort())
+        assertEquals("POP3", mailService.getProtocol())
     }
 
     @Test
     void testGetBeanByName() {
         ApplicationContext context = new ClassPathApplicationContext("valid-properties.xml")
-        Object object = context.getBean("newMailService")
-        MailService mailService = (MailService) object
-        assert mailService.getPort() == "3000"
-        assert mailService.getProtocol() =="POP3"
+        MailService mailService = (MailService) context.getBean("newMailService")
+        assertEquals("3000", mailService.getPort())
+        assertEquals("POP3", mailService.getProtocol())
     }
 
     @Test
@@ -58,35 +52,35 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
             assert expectedBeanNames.remove(beanName)
         }
 
-        assert expectedBeanNames.isEmpty()
+        assertTrue(expectedBeanNames.isEmpty())
     }
 
-//    @Test
-//    void testBeanMissedDefaultConstructor() {
-//        expectedEx.expect(BeanInstantiationException.class)
-//        expectedEx.expectMessage("Default constructor not found for com.belosh.ioc.service.BeanWithoutDefaultConstructor")
-//        new ClassPathApplicationContext("invalid-default-constructor.xml")
-//    }
-//
-//    @Test
-//    void testBeanIncorrectClassName() {
-//        expectedEx.expect(BeanInstantiationException.class)
-//        expectedEx.expectMessage("Incorrect class declared in beans configuration xml file")
-//        new ClassPathApplicationContext("invalid-class-declaration.xml")
-//    }
+    @Test
+    void testBeanMissedDefaultConstructor() {
+        expectedEx.expect(BeanInstantiationException.class)
+        expectedEx.expectMessage("Default constructor not found for com.belosh.ioc.service.BeanWithoutDefaultConstructor")
+        new ClassPathApplicationContext("invalid-default-constructor.xml")
+    }
+
+    @Test
+    void testBeanIncorrectClassName() {
+        expectedEx.expect(BeanInstantiationException.class)
+        expectedEx.expectMessage("Incorrect class declared in beans configuration xml file")
+        new ClassPathApplicationContext("invalid-class-declaration.xml")
+    }
 
     @Test
     void testAllDataTypes() {
         ApplicationContext classPathApplicationContext = new ClassPathApplicationContext("valid-data-types.xml")
         AllDataTypes allDataTypes = classPathApplicationContext.getBean("allDataTypes", AllDataTypes.class)
-        assert allDataTypes.getIntType() == 5
-        //assert allDataTypes.getDoubleType() == 3.36
-        assert allDataTypes.getLongType() == 12345678910L
-        //assert allDataTypes.getFloatType() == 3.36
-        assert allDataTypes.getShortType() == 32767
-        assert allDataTypes.getBooleanType()
-        assert allDataTypes.getByteType() == 127
-        assert allDataTypes.getCharType() == 't'
+        assertEquals(allDataTypes.getIntType(), 5)
+        assertEquals(allDataTypes.getDoubleType(), 3.36d, 0)
+        assertEquals(allDataTypes.getLongType(), 12345678910L)
+        assertEquals(allDataTypes.getFloatType(), 3.36f, 0)
+        assertEquals(allDataTypes.getShortType(), 32767)
+        assertTrue(allDataTypes.getBooleanType())
+        assertEquals(allDataTypes.getByteType(), 127)
+        assertEquals((char)'t', allDataTypes.getCharType())
     }
 
     @Test
@@ -102,4 +96,26 @@ class ClassPathApplicationContextTest extends GroovyTestCase {
         expectedEx.expectMessage("Reference bean not found: newMailServiceInvalid")
         new ClassPathApplicationContext("invalid-refdependency.xml")
     }
+
+    @Test
+    void beanPostProcessorFactory() {
+        new ClassPathApplicationContext("valid-propertie-with-processors.xml")
+    }
+
+    @Test
+    void testInit() {
+        ApplicationContext context = new ClassPathApplicationContext("valid-properties.xml")
+        MailService mailService = context.getBean("newMailService", MailService.class)
+        assertTrue(mailService.isInitExecuted())
+    }
+
+    @Test
+    void testPostProcessBeforeInitialization() {
+        ApplicationContext context = new ClassPathApplicationContext("valid-propertie-with-processors.xml")
+        MailService mailService = context.getBean("newMailService", MailService.class)
+        assertEquals("Before initialization configuration executed", mailService.postProcessorBeforeCfg)
+        assertEquals("After initialization configuration executed", mailService.postProcessorAfterCfg)
+    }
+
+
 }

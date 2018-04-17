@@ -13,12 +13,12 @@ public class ValueInjector extends Injector {
     }
 
     @Override
-    protected Map<String, ?> getDependencies(BeanDefinition beanDefinition) {
+    Map<String, ?> getDependencies(BeanDefinition beanDefinition) {
         return beanDefinition.getDependencies();
     }
 
     @Override
-    protected void injectPropertyIntoSetter(Object beanValue, Method method, Object propertyToInject) throws InvocationTargetException, IllegalAccessException {
+    void injectPropertyIntoSetter(Object beanValue, Method method, Object propertyToInject) throws InvocationTargetException, IllegalAccessException {
         String propertyValue = String.valueOf(propertyToInject);
         Class<?>[] fieldTypes = method.getParameterTypes();
         Class<?> fieldType = fieldTypes[0];

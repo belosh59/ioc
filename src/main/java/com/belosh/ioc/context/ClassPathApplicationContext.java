@@ -106,11 +106,15 @@ public class ClassPathApplicationContext implements ApplicationContext {
         this.reader = reader;
     }
 
+    private void injectDependencies(Injector injector) {
+        injector.injectDependencies();
+    }
+
     private void createBeansFromBeanDefinition() {
         for(BeanDefinition beanDefinition : beanDefinitions) {
+            String className = beanDefinition.getBeanClassName();
             try {
                 // prepare
-                String className = beanDefinition.getBeanClassName();
                 Class<?> clazz = Class.forName(className);
 
                 // bean creation
@@ -123,7 +127,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
             } catch (NoSuchMethodException e) {
                 throw new BeanInstantiationException("Default constructor not found for " + beanDefinition.getBeanClassName(), e);
             } catch (ClassNotFoundException e) {
-                throw new BeanInstantiationException("Incorrect class declared in beans configuration xml file", e);
+                throw new BeanInstantiationException("Incorrect class declared in beans configuration xml file: " + className, e);
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 throw new BeanInstantiationException("Issue during bean instantiation", e);
             }
@@ -131,8 +135,33 @@ public class ClassPathApplicationContext implements ApplicationContext {
         }
     }
 
-    private void injectDependencies(Injector injector) {
-        injector.injectDependencies();
+    private void createProcessorsFromBeanDefinition() {
+        for(Iterator<BeanDefinition> iterator = beanDefinitions.iterator(); iterator.hasNext(); ) {
+            BeanDefinition beanDefinition = iterator.next();
+            String className = beanDefinition.getBeanClassName();
+            try {
+                // prepare
+                Class<?> clazz = Class.forName(className);
+
+                // get processors
+                if (BeanFactoryPostProcessor.class.isAssignableFrom(clazz)) {
+                    BeanFactoryPostProcessor instance = (BeanFactoryPostProcessor) clazz.getConstructor().newInstance();
+                    beanFactoryPostProcessors.add(instance);
+                    iterator.remove();
+                }
+                if (BeanPostProcessor.class.isAssignableFrom(clazz)) {
+                    BeanPostProcessor instance = (BeanPostProcessor) clazz.getConstructor().newInstance();
+                    beanPostProcessors.add(instance);
+                    iterator.remove();
+                }
+            } catch (NoSuchMethodException e) {
+                throw new BeanInstantiationException("Default constructor not found for " + beanDefinition.getBeanClassName(), e);
+            } catch (ClassNotFoundException e) {
+                throw new BeanInstantiationException("Incorrect class declared in beans configuration xml file: " + className, e);
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                throw new BeanInstantiationException("Issue during bean instantiation", e);
+            }
+        }
     }
 
     private void postConstruct() {
@@ -155,35 +184,6 @@ public class ClassPathApplicationContext implements ApplicationContext {
                     }
                 }
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new BeanInstantiationException("Issue during bean instantiation", e);
-            }
-        }
-    }
-
-    private void createProcessorsFromBeanDefinition() {
-        for(Iterator<BeanDefinition> iterator = beanDefinitions.iterator(); iterator.hasNext(); ) {
-            BeanDefinition beanDefinition = iterator.next();
-            try {
-                // prepare
-                String className = beanDefinition.getBeanClassName();
-                Class<?> clazz = Class.forName(className);
-
-                // get processors
-                if (BeanFactoryPostProcessor.class.isAssignableFrom(clazz)) {
-                    BeanFactoryPostProcessor instance = (BeanFactoryPostProcessor) clazz.getConstructor().newInstance();
-                    beanFactoryPostProcessors.add(instance);
-                    iterator.remove();
-                }
-                if (BeanPostProcessor.class.isAssignableFrom(clazz)) {
-                    BeanPostProcessor instance = (BeanPostProcessor) clazz.getConstructor().newInstance();
-                    beanPostProcessors.add(instance);
-                    iterator.remove();
-                }
-            } catch (NoSuchMethodException e) {
-                throw new BeanInstantiationException("Default constructor not found for " + beanDefinition.getBeanClassName(), e);
-            } catch (ClassNotFoundException e) {
-                throw new BeanInstantiationException("Incorrect class declared in beans configuration xml file", e);
-            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 throw new BeanInstantiationException("Issue during bean instantiation", e);
             }
         }

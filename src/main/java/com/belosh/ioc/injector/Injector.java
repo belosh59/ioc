@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public abstract class Injector {
-    protected Map<BeanDefinition, Bean> beanDefinitionToBeanMap;
+    Map<BeanDefinition, Bean> beanDefinitionToBeanMap;
 
     public Injector(Map<BeanDefinition, Bean> beanDefinitionToBeanMap) {
         this.beanDefinitionToBeanMap = beanDefinitionToBeanMap;
@@ -33,6 +33,10 @@ public abstract class Injector {
         }
     }
 
+    abstract  Map<String, ?> getDependencies(BeanDefinition beanDefinition);
+
+    abstract void injectPropertyIntoSetter(Object beanValue, Method method, Object propertyToInject) throws InvocationTargetException, IllegalAccessException;
+
     private Method getSetterForInjection(Bean bean, String propertyName) {
         Class<?> beanValueClazz = bean.getValue().getClass();
         String setterName = getSetterName(propertyName);
@@ -45,11 +49,7 @@ public abstract class Injector {
         throw new BeanInstantiationException("Setter was not found for field: " + propertyName);
     }
 
-    protected abstract  Map<String, ?> getDependencies(BeanDefinition beanDefinition);
-
-    protected abstract void injectPropertyIntoSetter(Object beanValue, Method method, Object propertyToInject) throws InvocationTargetException, IllegalAccessException;
-
-    private String getSetterName( String fieldName) {
+    private String getSetterName(String fieldName) {
         return "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
     }
 }

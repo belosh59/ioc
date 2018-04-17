@@ -13,12 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SAXBeanDefinitionReader extends DefaultHandler implements BeanDefinitionReader {
-    private SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
     private String path;
-    private List<BeanDefinition> beanDefinitions = new ArrayList<>();
+    private SAXParserFactory saxParserFactory;
+    private List<BeanDefinition> beanDefinitions;
 
     public SAXBeanDefinitionReader(String path) {
         this.path = path;
+        beanDefinitions = new ArrayList<>();
+        saxParserFactory = SAXParserFactory.newInstance();
     }
 
     @Override

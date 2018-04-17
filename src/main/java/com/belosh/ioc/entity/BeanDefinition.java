@@ -42,16 +42,6 @@ public class BeanDefinition {
     }
 
     @Override
-    public String toString() {
-        return "BeanDefinition{" +
-                "id='" + id + '\'' +
-                ", beanClassName='" + beanClassName + '\'' +
-                ", dependencies=" + dependencies +
-                ", refDependencies=" + refDependencies +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -64,7 +54,16 @@ public class BeanDefinition {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(id, beanClassName, dependencies, refDependencies);
+    }
+
+    @Override
+    public String toString() {
+        return "BeanDefinition{" +
+                "id='" + id + '\'' +
+                ", beanClassName='" + beanClassName + '\'' +
+                ", dependencies=" + dependencies +
+                ", refDependencies=" + refDependencies +
+                '}';
     }
 }

@@ -20,10 +20,11 @@ import java.util.Map;
 
 public class DomXMLBeanDefinitionReader implements BeanDefinitionReader{
     private String path;
-    private List<BeanDefinition> beanDefinitions = new ArrayList<>();
+    private List<BeanDefinition> beanDefinitions;
 
     public DomXMLBeanDefinitionReader(String path) {
         this.path = path;
+        beanDefinitions = new ArrayList<>();
     }
 
     public List<BeanDefinition> readBeanDefinitions() {
@@ -91,9 +92,9 @@ public class DomXMLBeanDefinitionReader implements BeanDefinitionReader{
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (SAXException e) {
-            throw new RuntimeException("Unable to parse xml from stream");
+            throw new RuntimeException("Unable to parse xml from stream", e);
         } catch (ParserConfigurationException e) {
-            throw new RuntimeException("Cannot configure DOM Parser");
+            throw new RuntimeException("Cannot configure DOM Parser", e);
         }
     }
 }

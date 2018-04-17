@@ -10,7 +10,7 @@ import org.junit.rules.ExpectedException
 
 import static org.junit.Assert.*
 
-class ClassPathApplicationContextTest  {
+class ClassPathApplicationContextITest {
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none()

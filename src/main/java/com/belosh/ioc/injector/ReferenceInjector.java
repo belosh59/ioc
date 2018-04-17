@@ -15,7 +15,7 @@ public class ReferenceInjector extends Injector {
     }
 
     @Override
-    protected Map<String, ?> getDependencies(BeanDefinition beanDefinition) {
+    Map<String, ?> getDependencies(BeanDefinition beanDefinition) {
         Map<String, Object> refDependencies = new HashMap<>();
         Map<String, String> beanRefDependencies = beanDefinition.getRefDependencies();
         for (String propertyName : beanRefDependencies.keySet()) {
@@ -38,7 +38,7 @@ public class ReferenceInjector extends Injector {
     }
 
     @Override
-    protected void injectPropertyIntoSetter(Object beanValue, Method method, Object propertyToInject) throws InvocationTargetException, IllegalAccessException {
+    void injectPropertyIntoSetter(Object beanValue, Method method, Object propertyToInject) throws InvocationTargetException, IllegalAccessException {
         method.invoke(beanValue, propertyToInject);
     }
 }
